@@ -2,6 +2,8 @@
 
 namespace Aysheka\Socket;
 
+use Aysheka\Socket\Exception\SocketException;
+
 class Client extends Socket
 {
     private $ip;
@@ -12,18 +14,20 @@ class Client extends Socket
         parent::__construct($parammeters);
         $this->ip   = $ip;
         $this->port = $port;
+    }
 
+    public function connect()
+    {
         $socket = $this->getSocket();
-
-        socket_connect($socket, $ip, $port);
+        if (!socket_connect($socket, $this->ip, $this->port)) {
+            throw SocketException::cantConnectToSocket();
+        }
     }
 
     public function send($data)
     {
-        $socket = $this->getSocket();
-
-        var_dump($this->read(64));
-
-        socket_write($socket, $data, strlen($data));
+        $this->write($data);
     }
+
+
 }

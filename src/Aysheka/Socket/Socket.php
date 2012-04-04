@@ -2,6 +2,7 @@
 namespace Aysheka\Socket;
 
 use Aysheka\Socket\Exception\SocketException;
+use Aysheka\Socket\Exception\IOException;
 
 class Socket
 {
@@ -21,8 +22,14 @@ class Socket
     private $domainProtocol = self::DOMAIN_PROTOCOL_IP4;
     private $type = self::TYPE_SOCK_STREAM;
     private $protocol = self::PROTOCOL_TCP;
+
     private $socket;
 
+    /**
+     * @description Available options: ['domainProtocol', 'type', 'protocol', 'connect']
+     * @param array $properties
+     *
+     */
     public function __construct(array $properties = array())
     {
         if (isset($properties['domainProtocol'])) {
@@ -55,18 +62,27 @@ class Socket
         $this->socket = $socket;
     }
 
-    public function read($length, $type = PHP_NORMAL_READ)
+    public function read($length = 1024)
     {
-        $content = '';
-        var_dump($this->socket);
-        while (($data = socket_read($this->socket, $length, $type))) {
-            $content .= $data;
+        if (false === ($data = socket_read($this->socket, $length))) {
+            throw IOException::cantReadFromSocket();
         }
+        return $data;
+    }
 
-        return $content;
+    public function write($data)
+    {
+        if (!socket_write($this->socket, $data, strlen($data))) {
+            throw IOException::cantWriteToSocket();
+        }
     }
 
     public function __destruct()
+    {
+        $this->close();
+    }
+
+    public function close()
     {
         socket_close($this->socket);
     }
