@@ -6,9 +6,9 @@ use Aysheka\Socket\Exception\IOException;
 
 class Socket
 {
-    const DOMAIN_PROTOCOL_IP4  = AF_INET;
-    const DOMAIN_PROTOCOL_IP6  = AF_INET6;
-    const DOMAIN_PROTOCOL_UNIX = AF_UNIX;
+    const NETWORK_PROTOCOL_IP4  = AF_INET;
+    const NETWORK_PROTOCOL_IP6  = AF_INET6;
+    const NETWORK_PROTOCOL_UNIX = AF_UNIX;
 
     const TYPE_SOCK_STREAM    = SOCK_STREAM;
     const TYPE_SOCK_DGRAM     = SOCK_DGRAM;
@@ -19,7 +19,7 @@ class Socket
     const PROTOCOL_TCP = SOL_TCP;
     const PROTOCOL_UDP = SOL_UDP;
 
-    private $domainProtocol = self::DOMAIN_PROTOCOL_IP4;
+    private $domainProtocol = self::NETWORK_PROTOCOL_IP4;
     private $type = self::TYPE_SOCK_STREAM;
     private $protocol = self::PROTOCOL_TCP;
 
