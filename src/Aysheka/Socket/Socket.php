@@ -3,88 +3,101 @@ namespace Aysheka\Socket;
 
 use Aysheka\Socket\Exception\SocketException;
 use Aysheka\Socket\Exception\IOException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Aysheka\Socket\Event\SocketEvent;
 
 class Socket
 {
-    const NETWORK_PROTOCOL_IP4  = AF_INET;
-    const NETWORK_PROTOCOL_IP6  = AF_INET6;
-    const NETWORK_PROTOCOL_UNIX = AF_UNIX;
-
-    const TYPE_SOCK_STREAM    = SOCK_STREAM;
-    const TYPE_SOCK_DGRAM     = SOCK_DGRAM;
-    const TYPE_SOCK_SEQPACKET = SOCK_SEQPACKET;
-    const TYPE_SOCK_RAW       = SOCK_RAW;
-    const TYPE_SOCK_RDM       = SOCK_RDM;
-
-    const PROTOCOL_TCP = SOL_TCP;
-    const PROTOCOL_UDP = SOL_UDP;
-
-    private $domainProtocol = self::NETWORK_PROTOCOL_IP4;
-    private $type = self::TYPE_SOCK_STREAM;
-    private $protocol = self::PROTOCOL_TCP;
-
-    private $socket;
+    private $domainProtocol;
+    private $type;
+    private $protocol;
+    private $socketResource;
+    private $eventDispatcher;
 
     /**
-     * @description Available options: ['domainProtocol', 'type', 'protocol', 'connect']
+     * @description Available options: ['domain.protocol', 'type', 'protocol']
      * @param array $properties
      *
      */
-    public function __construct(array $properties = array())
+    function __construct(DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, EventDispatcher $eventDispatcher)
     {
-        if (isset($properties['domainProtocol'])) {
-            $this->domainProtocol = $properties['domainProtocol'];
-        }
+        $this->domainProtocol  = $domainProtocol;
+        $this->type            = $socketType;
+        $this->protocol        = $socketProtocol;
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
-        if (isset($properties['type'])) {
-            $this->type = $properties['type'];
-        }
+    function open()
+    {
+        $this->socketResource = socket_create($this->domainProtocol->getType(), $this->type->getType(), $this->protocol->getType());
 
-        if (isset($properties['protocol'])) {
-            $this->protocol = $properties['protocol'];
-        }
-
-        if ((isset($properties['connect']) && false === $properties['connect']) || !isset($properties['connect'])) {
-            $this->socket = socket_create($this->domainProtocol, $this->type, $this->protocol);
-        }
-        if (false === $this->socket) {
+        if (false === $this->socketResource) {
             throw SocketException::cantOpenSocket();
         }
+        $this->getEventDispatcher()->dispatch(SocketEvent::SOCKET_NEW_EVENT, new SocketEvent($this));
     }
 
-    protected function getSocket()
-    {
-        return $this->socket;
-    }
 
-    protected function setSocket($socket)
+    function read($length = 1024)
     {
-        $this->socket = $socket;
-    }
-
-    public function read($length = 1024)
-    {
-        if (false === ($data = socket_read($this->socket, $length))) {
+        if (false === ($data = socket_read($this->getSocketResource(), $length))) {
             throw IOException::cantReadFromSocket();
         }
         return $data;
     }
 
-    public function write($data)
+    function write($data)
     {
-        if (!socket_write($this->socket, $data, strlen($data))) {
+        if (!socket_write($this->socketResource, $data, strlen($data))) {
             throw IOException::cantWriteToSocket();
         }
     }
 
-    public function __destruct()
+    function __destruct()
     {
         $this->close();
     }
 
-    public function close()
+    function close()
     {
-        socket_close($this->socket);
+        if (is_resource($this->socketResource)) {
+            socket_close($this->getSocketResource());
+            $this->socketResource = null;
+            $this->getEventDispatcher()->dispatch(SocketEvent::SOCKET_CLOSE_EVENT, new SocketEvent($this));
+        }
+    }
+
+    protected function getSocketResource()
+    {
+        return $this->socketResource;
+    }
+
+    protected function setSocketResource($socket)
+    {
+        $this->socketResource = $socket;
+    }
+
+    /**
+     * @return EventDispatcher
+     */
+    protected function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
+
+    function getDomainProtocol()
+    {
+        return $this->domainProtocol;
+    }
+
+    function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    function getType()
+    {
+        return $this->type;
     }
 
 

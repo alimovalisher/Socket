@@ -3,28 +3,30 @@
 namespace Aysheka\Socket;
 
 use Aysheka\Socket\Exception\SocketException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Client extends Socket
 {
     private $ip;
     private $port;
 
-    public function __construct($ip, $port, array $parammeters = array())
+    function __construct($ip, $port, DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, EventDispatcher $eventDispatcher)
     {
-        parent::__construct($parammeters);
+        parent::__construct($domainProtocol, $socketType, $socketProtocol, $eventDispatcher);
         $this->ip   = $ip;
         $this->port = $port;
     }
 
-    public function connect()
+    function connect()
     {
-        $socket = $this->getSocket();
+        $this->open(); // open socket
+        $socket = $this->getSocketResource();
         if (!socket_connect($socket, $this->ip, $this->port)) {
             throw SocketException::cantConnectToSocket();
         }
     }
 
-    public function send($data)
+    function send($data)
     {
         $this->write($data);
     }

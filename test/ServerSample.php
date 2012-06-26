@@ -1,17 +1,19 @@
 <?php
-//
-require_once '../src/Aysheka/Socket/Socket.php';
-require_once '../src/Aysheka/Socket/Server.php';
-require_once '../src/Aysheka/Socket/Exception/SocketException.php';
-require_once '../src/Aysheka/Socket/Listener.php';
-require_once '../src/Aysheka/Socket/Client.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
+use Aysheka\Socket\Client;
 use Aysheka\Socket\Socket;
+use Aysheka\Socket\DomainProtocol;
+use Aysheka\Socket\SocketProtocol;
+use Aysheka\Socket\SocketType;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Aysheka\Socket\Event\ServerEvent;
 
-class Listener implements \Aysheka\Socket\Listener
+class Listener
 {
-    public function accept(Socket $socket)
+    public function onRequest(ServerEvent $event)
     {
+        $socket = $event->getSocket();
         echo "Write to client\n";
         $msg = "Hello";
         $socket->write($msg);
@@ -27,12 +29,15 @@ class Listener implements \Aysheka\Socket\Listener
         echo $socket->read(), "\n";
 
         echo "Finish work\n";
-        $socket->write("Closing your socket");
+        $socket->write("Closing your socket\n");
         $socket->close();
         //        var_dump($data);
     }
 
 }
 
-$server = new \Aysheka\Socket\Server('127.0.0.1', 8088);
-$server->listen(new Listener());
+$listener        = new Listener();
+$eventDispatcher = new EventDispatcher();
+$eventDispatcher->addListener(\Aysheka\Socket\Event\ServerEvent::NEW_REQUEST, array($listener, 'onRequest'));
+$server = new \Aysheka\Socket\Server('127.0.0.1', 8088, DomainProtocol::create(DomainProtocol::IP4), SocketType::create(SocketType::STREAM), SocketProtocol::create(\Aysheka\Socket\SocketProtocol::TCP), $eventDispatcher);
+$server->create();

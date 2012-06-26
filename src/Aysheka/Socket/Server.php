@@ -1,47 +1,43 @@
 <?php
 namespace Aysheka\Socket;
 use Aysheka\Socket\Exception\SocketException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Aysheka\Socket\Event\ServerEvent;
 
 class Server extends Socket
 {
     private $port;
     private $ip;
-    private $connections;
 
-    public function __construct($ip, $port, array $parameters = array())
+    function __construct($ip, $port, DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, EventDispatcher $eventDispatcher)
     {
-        parent::__construct($parameters);
+        parent::__construct($domainProtocol, $socketType, $socketProtocol, $eventDispatcher);
 
         $this->ip   = $ip;
         $this->port = $port;
     }
 
-    public function listen(Listener $listener = null)
+
+    function create()
     {
-        $currentSocket = $this->getSocket();
+        $this->open();
+        $serverSocket = $this->getSocketResource();
 
-
-        if (!socket_bind($currentSocket, $this->ip, $this->port)) {
+        if (!socket_bind($serverSocket, $this->ip, $this->port)) {
             throw SocketException::cantBindToSocket();
         }
 
-        if (!socket_listen($currentSocket)) {
+        if (!socket_listen($serverSocket)) {
             throw SocketException::failed();
         }
 
         while (true) {
-            if (false !== ($clientSocket = socket_accept($currentSocket))) {
-
-                $socket = new Socket(array('connect' => false));
-                $socket->setSocket($clientSocket);
-                $this->connections[] = $socket;
-
-                if (null !== $listener) {
-                    $listener->accept($socket);
-                } else {
-                    $socket->close();
-                }
+            if (false !== ($clientSocket = socket_accept($serverSocket))) {
+                $socket = new Socket($this->getDomainProtocol(), $this->getType(), $this->getProtocol(), $this->getEventDispatcher());
+                $socket->setSocketResource($clientSocket);
+                $this->getEventDispatcher()->dispatch(ServerEvent::NEW_REQUEST, new ServerEvent($socket));
             }
         }
     }
+
 }

@@ -1,0 +1,15 @@
+{
+    "name":"Socket",
+    "type":"library",
+    "require":{
+        "monolog/monolog":">=1.0.0",
+        "symfony/event-dispatcher":"2.*",
+        "php":">=5.3.2"
+    },
+    "autoload":{
+        "psr-0":{
+            "Aysheka\\Socket":"src/",
+            "Aysheka\\Socket\\Test":"test/"
+        }
+    }
+}
