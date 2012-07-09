@@ -6,8 +6,10 @@ use Aysheka\Socket\Socket;
 
 class SocketEvent extends Event
 {
-    const SOCKET_NEW_EVENT   = 'aysheka.socket.event.new';
-    const SOCKET_CLOSE_EVENT = 'aysheka.socket.event.close';
+    const READ  = 'aysheka.socket.event.read';
+    const WRITE = 'aysheka.socket.event.write';
+    const OPEN  = 'aysheka.socket.event.open';
+    const CLOSE = 'aysheka.socket.event.close';
 
     private $socket;
 

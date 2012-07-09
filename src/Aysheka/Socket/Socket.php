@@ -34,7 +34,7 @@ class Socket
         if (false === $this->socketResource) {
             throw SocketException::cantOpenSocket();
         }
-        $this->getEventDispatcher()->dispatch(SocketEvent::SOCKET_NEW_EVENT, new SocketEvent($this));
+        $this->getEventDispatcher()->dispatch(SocketEvent::OPEN, new SocketEvent($this));
     }
 
 
@@ -43,6 +43,9 @@ class Socket
         if (false === ($data = socket_read($this->getSocketResource(), $length))) {
             throw IOException::cantReadFromSocket();
         }
+
+        $this->getEventDispatcher()->dispatch(SocketEvent::READ, new SocketEvent($this));
+
         return $data;
     }
 
@@ -51,6 +54,8 @@ class Socket
         if (!socket_write($this->socketResource, $data, strlen($data))) {
             throw IOException::cantWriteToSocket();
         }
+
+        $this->getEventDispatcher()->dispatch(SocketEvent::WRITE, new SocketEvent($this));
     }
 
     function __destruct()
@@ -63,7 +68,7 @@ class Socket
         if (is_resource($this->socketResource)) {
             socket_close($this->getSocketResource());
             $this->socketResource = null;
-            $this->getEventDispatcher()->dispatch(SocketEvent::SOCKET_CLOSE_EVENT, new SocketEvent($this));
+            $this->getEventDispatcher()->dispatch(SocketEvent::CLOSE, new SocketEvent($this));
         }
     }
 
