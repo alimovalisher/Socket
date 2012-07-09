@@ -1,5 +1,6 @@
 <?php
 namespace Aysheka\Socket\Exception\IO;
+use Aysheka\Socket\Socket;
 use Aysheka\Socket\Exception\IOException;
 
 class WriteException extends IOException
