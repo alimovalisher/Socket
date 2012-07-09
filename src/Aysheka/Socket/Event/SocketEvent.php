@@ -6,10 +6,13 @@ use Aysheka\Socket\Socket;
 
 class SocketEvent extends Event
 {
-    const READ  = 'aysheka.socket.event.read';
-    const WRITE = 'aysheka.socket.event.write';
-    const OPEN  = 'aysheka.socket.event.open';
-    const CLOSE = 'aysheka.socket.event.close';
+    const READ      = 'aysheka.socket.event.io.read';
+    const WRITE     = 'aysheka.socket.event.io.write';
+    const OPEN      = 'aysheka.socket.event.init.open';
+    const CONNECT   = 'aysheka.socket.event.init.connect';
+    const BIND      = 'aysheka.socket.event.init.bind';
+    const CLOSE     = 'aysheka.socket.event.init.close';
+    const EXCEPTION = 'aysheka.socket.event.exception';
 
     protected $socket;
     protected $data;

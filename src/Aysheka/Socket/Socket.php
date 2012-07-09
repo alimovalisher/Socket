@@ -3,7 +3,9 @@ namespace Aysheka\Socket;
 
 use Aysheka\Socket\Exception\SocketException;
 use Aysheka\Socket\Exception\IOException;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Aysheka\Socket\Exception\IO\ReadException;
+use Aysheka\Socket\Exception\IO\WriteException;
+use Aysheka\Socket\Exception\Init\OpenException;
 use Aysheka\Socket\Event\SocketEvent;
 
 class Socket
@@ -19,7 +21,7 @@ class Socket
      * @param array $properties
      *
      */
-    function __construct(DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, EventDispatcher $eventDispatcher)
+    function __construct(DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, $eventDispatcher=null)
     {
         $this->domainProtocol  = $domainProtocol;
         $this->type            = $socketType;
@@ -29,33 +31,36 @@ class Socket
 
     function open()
     {
-        $this->socketResource = socket_create($this->domainProtocol->getType(), $this->type->getType(), $this->protocol->getType());
+        $this->socketResource = @socket_create($this->domainProtocol->getType(), $this->type->getType(), $this->protocol->getType());
 
         if (false === $this->socketResource) {
-            throw SocketException::cantOpenSocket();
+            throw new OpenException($this);
         }
-        $this->getEventDispatcher()->dispatch(SocketEvent::OPEN, new SocketEvent($this));
+        if ($this->getEventDispatcher())
+            $this->getEventDispatcher()->dispatch(SocketEvent::OPEN, new SocketEvent($this));
     }
 
 
     function read($length = 1024)
     {
-        if (false === ($data = socket_read($this->getSocketResource(), $length))) {
-            throw IOException::cantReadFromSocket();
+        if (false === ($data = @socket_read($this->getSocketResource(), $length))) {
+            throw new ReadException($this);
         }
 
-        $this->getEventDispatcher()->dispatch(SocketEvent::READ, new SocketEvent($this));
+        if ($this->getEventDispatcher())
+            $this->getEventDispatcher()->dispatch(SocketEvent::READ, new SocketEvent($this, $data));
 
         return $data;
     }
 
     function write($data)
     {
-        if (!socket_write($this->socketResource, $data, strlen($data))) {
-            throw IOException::cantWriteToSocket();
+        if (!@socket_write($this->socketResource, $data, strlen($data))) {
+            throw new ReadException($this, $data);
         }
 
-        $this->getEventDispatcher()->dispatch(SocketEvent::WRITE, new SocketEvent($this, $data));
+        if ($this->getEventDispatcher())
+            $this->getEventDispatcher()->dispatch(SocketEvent::WRITE, new SocketEvent($this, $data));
     }
 
     function __destruct()
@@ -66,9 +71,10 @@ class Socket
     function close()
     {
         if (is_resource($this->socketResource)) {
-            socket_close($this->getSocketResource());
+            @socket_close($this->getSocketResource());
             $this->socketResource = null;
-            $this->getEventDispatcher()->dispatch(SocketEvent::CLOSE, new SocketEvent($this));
+            if ($this->getEventDispatcher())
+                $this->getEventDispatcher()->dispatch(SocketEvent::CLOSE, new SocketEvent($this));
         }
     }
 
@@ -85,7 +91,7 @@ class Socket
     /**
      * @return EventDispatcher
      */
-    protected function getEventDispatcher()
+    public function getEventDispatcher()
     {
         return $this->eventDispatcher;
     }

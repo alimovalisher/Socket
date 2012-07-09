@@ -1,6 +1,6 @@
 <?php
 namespace Aysheka\Socket\Exception;
 
-class IOException extends SocketException
+class InitException extends SocketException
 {
 }
