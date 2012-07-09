@@ -55,7 +55,7 @@ class Socket
             throw IOException::cantWriteToSocket();
         }
 
-        $this->getEventDispatcher()->dispatch(SocketEvent::WRITE, new SocketEvent($this));
+        $this->getEventDispatcher()->dispatch(SocketEvent::WRITE, new SocketEvent($this, $data));
     }
 
     function __destruct()

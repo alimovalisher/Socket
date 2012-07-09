@@ -11,17 +11,22 @@ class SocketEvent extends Event
     const OPEN  = 'aysheka.socket.event.open';
     const CLOSE = 'aysheka.socket.event.close';
 
-    private $socket;
+    protected $socket;
+    protected $data;
 
-    function __construct(Socket $socket)
+    public function __construct(Socket $socket, $data=null)
     {
         $this->socket = $socket;
+        $this->data   = $data;
     }
 
-    function getSocket()
+    public function getSocket()
     {
         return $this->socket;
     }
 
-
+    public function getData()
+    {
+        return $this->data;
+    }
 }
