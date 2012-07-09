@@ -1,16 +1,16 @@
 {
-    "name":"aysheka/socket",
-    "type":"library",
-    "require":{
+    "name":"aysheka/socket"
+    ,"type":"library"
+    ,"require": {
         "php":">=5.3.2"
-    },
-    "suggest":{
+    }
+    ,"suggest":{
         "symfony/event-dispatcher":"2.*"
-    },
-    "autoload":{
+    }
+    ,"autoload":{
         "psr-0":{
-            "Aysheka\\Socket":"src/",
-            "Aysheka\\Socket\\Test":"test/"
+            "Aysheka\\Socket":"src/"
+            ,"Aysheka\\Socket\\Test":"test/"
         }
     }
 }
