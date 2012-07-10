@@ -10,6 +10,7 @@ class Server extends Socket
 {
     private $port;
     private $ip;
+    private $running;
 
     function __construct($ip, $port, DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, $eventDispatcher=null)
     {
@@ -19,6 +20,15 @@ class Server extends Socket
         $this->port = $port;
     }
 
+    public function stop()
+    {
+        $this->running = false;
+    }
+
+    public function start()
+    {
+        $this->running = true;
+    }
 
     function create()
     {
@@ -36,7 +46,9 @@ class Server extends Socket
             throw new SocketException($this);
         }
 
-        while (true) {
+        $this->start();
+
+        while ($this->running) {
             if (false !== ($clientSocket = socket_accept($serverSocket))) {
                 $socket = new Socket($this->getDomainProtocol(), $this->getType(), $this->getProtocol(), $this->getEventDispatcher());
                 $socket->setSocketResource($clientSocket);
