@@ -53,7 +53,7 @@ class Server extends Socket
                 $socket = new Socket($this->getDomainProtocol(), $this->getType(), $this->getProtocol(), $this->getEventDispatcher());
                 $socket->setSocketResource($clientSocket);
                 if ($socket->getEventDispatcher())
-                    $socket->getEventDispatcher()->dispatch(ServerEvent::NEW_REQUEST, new ServerEvent($socket));
+                    $socket->getEventDispatcher()->dispatch(ServerEvent::NEW_REQUEST, new ServerEvent($socket, $this));
             }
         }
     }
