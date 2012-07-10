@@ -71,7 +71,7 @@ class Socket
     function close()
     {
         if (is_resource($this->socketResource)) {
-            @socket_close($this->getSocketResource());
+            socket_close($this->getSocketResource());
             $this->socketResource = null;
             if ($this->getEventDispatcher())
                 $this->getEventDispatcher()->dispatch(SocketEvent::CLOSE, new SocketEvent($this));
