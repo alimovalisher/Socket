@@ -6,20 +6,30 @@ use Aysheka\Socket\Socket;
 
 class SocketEvent extends Event
 {
-    const SOCKET_NEW_EVENT   = 'aysheka.socket.event.new';
-    const SOCKET_CLOSE_EVENT = 'aysheka.socket.event.close';
+    const READ      = 'aysheka.socket.event.io.read';
+    const WRITE     = 'aysheka.socket.event.io.write';
+    const OPEN      = 'aysheka.socket.event.init.open';
+    const CONNECT   = 'aysheka.socket.event.init.connect';
+    const BIND      = 'aysheka.socket.event.init.bind';
+    const CLOSE     = 'aysheka.socket.event.init.close';
+    const EXCEPTION = 'aysheka.socket.event.exception';
 
-    private $socket;
+    protected $socket;
+    protected $data;
 
-    function __construct(Socket $socket)
+    public function __construct(Socket $socket, $data=null)
     {
         $this->socket = $socket;
+        $this->data   = $data;
     }
 
-    function getSocket()
+    public function getSocket()
     {
         return $this->socket;
     }
 
-
+    public function getData()
+    {
+        return $this->data;
+    }
 }

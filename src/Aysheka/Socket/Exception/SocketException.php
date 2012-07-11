@@ -1,35 +1,29 @@
 <?php
 namespace Aysheka\Socket\Exception;
+use Aysheka\Socket\Socket;
+use Aysheka\Socket\Event\SocketEvent;
+use Exception;
 
-class SocketException extends \Exception
+class SocketException extends Exception
 {
-    static function cantOpenSocket()
-    {
-        return new self(sprintf('Cant open socket: %s', self::getSocketError()));
-    }
+    protected $socket;
+    protected $errorString;
+    protected $errorNo;
 
-
-    static function cantConnectToSocket()
+    public function __construct(Socket $socket, $customMessage=null, $errorNo=null)
     {
-        return new self(sprintf('Cant connect to socket: %s', self::getSocketError()));
-    }
+        $this->socket = $socket;
+        $this->errorNo = $errorNo ?: socket_last_error();
+        $this->errorString = socket_strerror($this->errorNo);
+        $msg = $this->errorString;
 
-    static function failed()
-    {
-        return new self(sprintf('Failed: %s', self::getSocketError()));
-    }
+        if ($customMessage) {
+            $msg = "$customMessage: $msg";
+        }
 
-    static function cantBindToSocket()
-    {
-        return new self(sprintf('Cant bind to socket: %s', self::getSocketError()));
-    }
+        parent::__construct($msg);
 
-    /**
-     * @static
-     * @return string
-     */
-    protected static function getSocketError()
-    {
-        return socket_strerror(socket_last_error());
+        if ($socket->getEventDispatcher())
+            $socket->getEventDispatcher()->dispatch(SocketEvent::EXCEPTION, new SocketEvent($socket, $this));
     }
 }
