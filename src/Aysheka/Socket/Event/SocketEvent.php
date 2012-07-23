@@ -4,6 +4,9 @@ namespace Aysheka\Socket\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Aysheka\Socket\Socket;
 
+/**
+ * @todo Create event class on each topic
+ */
 class SocketEvent extends Event
 {
     const READ      = 'aysheka.socket.event.io.read';
@@ -17,18 +20,18 @@ class SocketEvent extends Event
     protected $socket;
     protected $data;
 
-    public function __construct(Socket $socket, $data=null)
+    function __construct(Socket $socket, $data = null)
     {
         $this->socket = $socket;
         $this->data   = $data;
     }
 
-    public function getSocket()
+    function getSocket()
     {
         return $this->socket;
     }
 
-    public function getData()
+    function getData()
     {
         return $this->data;
     }

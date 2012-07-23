@@ -1,12 +1,12 @@
 <?php
 namespace Aysheka\Socket\Exception\Init;
 use Aysheka\Socket\Socket;
-use Aysheka\Socket\Exception\IOException;
+use Aysheka\Socket\Exception\Init\InitException;
 
-class OpenException extends IOException
+class OpenException extends InitException
 {
-    public function __construct(Socket $socket, $msg=null) {
-      if (!$msg) $msg = "Can't open socket";
-      parent::__construct($socket, $msg);
+    function __construct(Socket $socket)
+    {
+        parent::__construct($socket, 'Can\'t open socket');
     }
 }

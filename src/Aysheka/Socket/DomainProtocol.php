@@ -23,6 +23,4 @@ class DomainProtocol
     {
         return $this->type;
     }
-
-
 }

@@ -12,7 +12,8 @@ use Aysheka\Socket\Event\SocketEvent;
 
 $eventDispatcher = new EventDispatcher();
 
-$eventDispatcher->addListener(ServerEvent::NEW_REQUEST, function (ServerEvent $event) {
+$eventDispatcher->addListener(ServerEvent::NEW_REQUEST, function (ServerEvent $event)
+{
     $socket = $event->getSocket();
 
     $msg = "HELO\n";
@@ -24,27 +25,33 @@ $eventDispatcher->addListener(ServerEvent::NEW_REQUEST, function (ServerEvent $e
     $socket->close();
 });
 
-$eventDispatcher->addListener(SocketEvent::OPEN, function (SocketEvent $event) {
+$eventDispatcher->addListener(SocketEvent::OPEN, function (SocketEvent $event)
+{
     echo "Open\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::CLOSE, function (SocketEvent $event) {
+$eventDispatcher->addListener(SocketEvent::CLOSE, function (SocketEvent $event)
+{
     echo "Close\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::CONNECT, function (SocketEvent $event) {
+$eventDispatcher->addListener(SocketEvent::CONNECT, function (SocketEvent $event)
+{
     echo "Connect\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::BIND, function (SocketEvent $event) {
+$eventDispatcher->addListener(SocketEvent::BIND, function (SocketEvent $event)
+{
     echo "Bind\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::READ, function (SocketEvent $event) {
+$eventDispatcher->addListener(SocketEvent::READ, function (SocketEvent $event)
+{
     echo "Read: " . trim($event->getData()) . "\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::WRITE, function (SocketEvent $event) {
+$eventDispatcher->addListener(SocketEvent::WRITE, function (SocketEvent $event)
+{
     echo "Write: " . trim($event->getData()) . "\n";
 });
 

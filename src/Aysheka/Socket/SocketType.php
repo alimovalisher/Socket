@@ -25,6 +25,4 @@ class SocketType
     {
         return $this->type;
     }
-
-
 }

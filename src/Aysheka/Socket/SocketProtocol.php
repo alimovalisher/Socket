@@ -22,6 +22,4 @@ class SocketProtocol
     {
         return $this->type;
     }
-
-
 }

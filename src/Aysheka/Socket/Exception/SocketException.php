@@ -7,23 +7,16 @@ use Exception;
 class SocketException extends Exception
 {
     protected $socket;
-    protected $errorString;
-    protected $errorNo;
 
-    public function __construct(Socket $socket, $customMessage=null, $errorNo=null)
+
+    function __construct(Socket $socket, $message)
     {
-        $this->socket = $socket;
-        $this->errorNo = $errorNo ?: socket_last_error();
-        $this->errorString = socket_strerror($this->errorNo);
-        $msg = $this->errorString;
+        $this->socket       = $socket;
+        $code               = socket_last_error();
+        $socketErrorMessage = socket_strerror($code);
 
-        if ($customMessage) {
-            $msg = "$customMessage: $msg";
-        }
+        parent::__construct("{$message}. {$socketErrorMessage}.", $code);
 
-        parent::__construct($msg);
-
-        if ($socket->getEventDispatcher())
-            $socket->getEventDispatcher()->dispatch(SocketEvent::EXCEPTION, new SocketEvent($socket, $this));
+        $socket->getEventDispatcher()->dispatch(SocketEvent::EXCEPTION, new SocketEvent($socket, $this));
     }
 }

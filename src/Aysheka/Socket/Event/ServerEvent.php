@@ -9,13 +9,14 @@ class ServerEvent extends SocketEvent
 
     protected $server;
 
-    public function __construct(Socket $socket, Server $server)
+    function __construct(Socket $socket, Server $server)
     {
         parent::__construct($socket);
-        $this->server   = $server;
+        $this->server = $server;
     }
 
-    public function getServer() {
+    function getServer()
+    {
         return $this->server;
     }
 }
