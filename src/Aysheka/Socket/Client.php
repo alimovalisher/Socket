@@ -4,13 +4,14 @@ namespace Aysheka\Socket;
 
 use Aysheka\Socket\Exception\Init\ConnectException;
 use Aysheka\Socket\Event\SocketEvent;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Client extends Socket
 {
     private $ip;
     private $port;
 
-    function __construct($ip, $port, DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, $eventDispatcher = null)
+    function __construct($ip, $port, DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, EventDispatcher $eventDispatcher)
     {
         parent::__construct($domainProtocol, $socketType, $socketProtocol, $eventDispatcher);
         $this->ip   = $ip;
