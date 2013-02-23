@@ -1,6 +1,6 @@
 <?php
 
-namespace Aysheka\Socket;
+namespace Aysheka\Socket\Client;
 
 use Aysheka\Socket\Exception\Init\ConnectException;
 use Aysheka\Socket\Event\SocketEvent;

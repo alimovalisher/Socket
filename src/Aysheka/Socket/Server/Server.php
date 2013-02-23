@@ -14,7 +14,7 @@ class Server extends Socket
     private $ip;
     private $running;
 
-    function __construct($ip, $port, DomainProtocol $domainProtocol, SocketType $socketType, SocketProtocol $socketProtocol, EventDispatcher $eventDispatcher)
+    function __construct($ip, $port, DomainProtocol $domainProtocol, Type $socketType, SocketProtocol $socketProtocol, EventDispatcher $eventDispatcher)
     {
         parent::__construct($domainProtocol, $socketType, $socketProtocol, $eventDispatcher);
 
@@ -54,11 +54,15 @@ class Server extends Socket
             throw new BindException($this);
         }
 
+
         $this->getEventDispatcher()->dispatch(SocketEvent::BIND, new SocketEvent($this));
+
 
         if (!socket_listen($serverSocket)) {
             throw new ListenException($this);
         }
+
+//        socket_set_nonblock($serverSocket);
 
         $this->start();
 
@@ -68,6 +72,8 @@ class Server extends Socket
                 $socket->setSocketResource($clientSocket);
                 $socket->getEventDispatcher()->dispatch(ServerEvent::NEW_REQUEST, new ServerEvent($socket, $this));
             }
+
+            sleep(3);
         }
     }
 

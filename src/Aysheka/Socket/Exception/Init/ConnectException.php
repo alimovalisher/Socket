@@ -7,6 +7,6 @@ class ConnectException extends InitException
 {
     function __construct(Socket $socket)
     {
-        parent::__construct($socket, 'Can\'t connect to socket');
+        parent::__construct($socket, 'Could\'t connect to socket');
     }
 }

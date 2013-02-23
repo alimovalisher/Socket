@@ -1,7 +1,8 @@
 <?php
 namespace Aysheka\Socket\Exception;
+
+use Aysheka\Socket\Event\ExceptionEvent;
 use Aysheka\Socket\Socket;
-use Aysheka\Socket\Event\SocketEvent;
 use Exception;
 
 class SocketException extends Exception
@@ -17,6 +18,6 @@ class SocketException extends Exception
 
         parent::__construct("{$message}. {$socketErrorMessage}.", $code);
 
-        $socket->getEventDispatcher()->dispatch(SocketEvent::EXCEPTION, new SocketEvent($socket, $this));
+        $socket->getEventDispatcher()->dispatch(ExceptionEvent::getEventName(), new ExceptionEvent($socket, $this));
     }
 }

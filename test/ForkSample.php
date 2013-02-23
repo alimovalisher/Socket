@@ -12,7 +12,7 @@ use Aysheka\Socket\Client;
 use Aysheka\Socket\Socket;
 use Aysheka\Socket\DomainProtocol;
 use Aysheka\Socket\SocketProtocol;
-use Aysheka\Socket\SocketType;
+use Aysheka\Socket\Type;
 use Aysheka\Socket\Event\ServerEvent;
 use Aysheka\Socket\Event\SocketEvent;
 use Aysheka\Socket\Exception\SocketException;
@@ -108,7 +108,7 @@ if ($pid == -1) {
     die('could not fork');
 } else if ($pid) {
     // we are the parent
-    $server = new Server('127.0.0.1', 8089, DomainProtocol::create(DomainProtocol::IP4), SocketType::create(SocketType::STREAM), SocketProtocol::create(\Aysheka\Socket\SocketProtocol::TCP), $eventDispatcher);
+    $server = new Server('127.0.0.1', 8089, DomainProtocol::create(DomainProtocol::IP4), Type::create(Type::STREAM), SocketProtocol::create(\Aysheka\Socket\SocketProtocol::TCP), $eventDispatcher);
     $server->create();
 
     pcntl_wait($status); //Protect against Zombie children
@@ -117,7 +117,7 @@ if ($pid == -1) {
 } else {
     // we are the child
     usleep(rand(SOCKET_TEST_DELAY, SOCKET_TEST_DELAY * 2));
-    $client = new Client('127.0.0.1', 8089, DomainProtocol::create(DomainProtocol::IP4), SocketType::create(SocketType::STREAM), SocketProtocol::create(\Aysheka\Socket\SocketProtocol::TCP), $eventDispatcher);
+    $client = new Client('127.0.0.1', 8089, DomainProtocol::create(DomainProtocol::IP4), Type::create(Type::STREAM), SocketProtocol::create(\Aysheka\Socket\SocketProtocol::TCP), $eventDispatcher);
 
     try {
         $client->connect();
