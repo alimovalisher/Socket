@@ -1,8 +1,9 @@
 <?php
-namespace Aysheka\Socket\EventListener\Server;
-use Aysheka\Socket\Event\ServerEvent;
+namespace Aysheka\Socket\EventListener;
 
 // TODO seems this class must be deleted
+use Aysheka\Socket\Server\Event\ServerEvent;
+
 class SocketListener
 {
 

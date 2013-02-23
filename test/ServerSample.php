@@ -2,60 +2,68 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Aysheka\Socket\Client;
-use Aysheka\Socket\Socket;
-use Aysheka\Socket\DomainProtocol;
-use Aysheka\Socket\SocketProtocol;
 use Aysheka\Socket\Type;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Aysheka\Socket\Event\ServerEvent;
 use Aysheka\Socket\Event\SocketEvent;
+use Aysheka\Socket\Server\Event\NewRequestEvent;
+use Aysheka\Socket\Event\Init\OpenEvent;
+use Aysheka\Socket\Event\Init\CloseEvent;
+use Aysheka\Socket\Client\Event\ConnectEvent;
+use Aysheka\Socket\Server\Event\BindEvent;
+use Aysheka\Socket\Event\IO\ReadEvent;
+use Aysheka\Socket\Event\IO\WriteEvent;
 
 $eventDispatcher = new EventDispatcher();
 
-$eventDispatcher->addListener(ServerEvent::NEW_REQUEST, function (ServerEvent $event) {
+$eventDispatcher->addListener(NewRequestEvent::getEventName(), function (NewRequestEvent $event) {
+
     $socket = $event->getSocket();
 
-    $msg = "HELO\n";
-    $socket->write($msg);
+    $socket->write("HELLO I'm test server\n");
 
-    $socket->read();
+    while (true) {
+        $data  = '';
+        $bytes = $socket->read();
+
+        while ($bytes) {
+            $data .= $bytes;
+
+            $bytes = $socket->read();
+        }
+
+        echo 'Receive from client: ', $data, "\n\n";
+
+        $socket->write('Server reply: ' . microtime(true));
+    }
 
 
-    $socket->write('Block socket on 5 min');
-//    $time = time();
-
-//    while (time() - time() < 300) {
-//        $socket->write('Olala');
-//        sleep(1);
-//    }
-    sleep(300);
     $socket->write("Closing your socket\n");
-    $socket->close();
+
 });
 
-$eventDispatcher->addListener(SocketEvent::OPEN, function (SocketEvent $event) {
+$eventDispatcher->addListener(OpenEvent::getEventName(), function (OpenEvent $event) {
     echo "Open\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::CLOSE, function (SocketEvent $event) {
+$eventDispatcher->addListener(CloseEvent::getEventName(), function (CloseEvent $event) {
     echo "Close\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::CONNECT, function (SocketEvent $event) {
+$eventDispatcher->addListener(ConnectEvent::getEventName(), function (ConnectEvent $event) {
     echo "Connect\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::BIND, function (SocketEvent $event) {
+$eventDispatcher->addListener(BindEvent::getEventName(), function (BindEvent $event) {
     echo "Bind\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::READ, function (SocketEvent $event) {
+$eventDispatcher->addListener(ReadEvent::getEventName(), function (ReadEvent $event) {
     echo "Read: " . trim($event->getData()) . "\n";
 });
 
-$eventDispatcher->addListener(SocketEvent::WRITE, function (SocketEvent $event) {
+$eventDispatcher->addListener(WriteEvent::getEventName(), function (WriteEvent $event) {
     echo "Write: " . trim($event->getData()) . "\n";
 });
 
-$server = new \Aysheka\Socket\Server('127.0.0.1', 8089, DomainProtocol::create(DomainProtocol::IP4), Type::create(Type::STREAM), SocketProtocol::create(\Aysheka\Socket\SocketProtocol::TCP), $eventDispatcher);
+$server = new \Aysheka\Socket\Server\Server('127.0.0.1', 8089, new \Aysheka\Socket\Address\IP4(), new Type\Stream(), new \Aysheka\Socket\Transport\TCP(), $eventDispatcher);
 $server->create();

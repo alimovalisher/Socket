@@ -1,8 +1,8 @@
 <?php
 
-namespace Aysheka\Socket\Protocol;
+namespace Aysheka\Socket\Transport;
 
-class Unix implements Protocol
+class Unix implements Transport
 {
     function getType()
     {

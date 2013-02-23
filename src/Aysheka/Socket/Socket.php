@@ -4,33 +4,46 @@ namespace Aysheka\Socket;
 use Aysheka\Socket\Address\Address;
 use Aysheka\Socket\Event\IO\ReadEvent;
 use Aysheka\Socket\Event\IO\WriteEvent;
+use Aysheka\Socket\Event\Init\CloseEvent;
 use Aysheka\Socket\Event\Init\OpenEvent;
 use Aysheka\Socket\Exception\IO\ReadException;
 use Aysheka\Socket\Exception\Init\OpenException;
-use Aysheka\Socket\Protocol\Protocol;
+use Aysheka\Socket\Transport\Transport;
 use Aysheka\Socket\Type\Type;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Socket
 {
-    private $domainProtocol;
-    private $type;
-    private $protocol;
+    /**
+     * @var Address\Address
+     */
+    private $addressType;
+    /**
+     * Socket Type
+     * @var Type\Type
+     */
+    private $socketType;
+    /**
+     * Transport
+     * @var Transport\Transport
+     */
+    private $transport;
+    /**
+     * Socket resource
+     * @var
+     */
     private $socketResource;
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
     private $eventDispatcher;
 
 
-    /**
-     * @param \Aysheka\Socket\Address\Address|\Aysheka\Socket\Address\Address       $address
-     * @param \Aysheka\Socket\Type\Type|\Aysheka\Socket\Type\Type                   $socketType
-     * @param \Aysheka\Socket\Protocol\Protocol|\Aysheka\Socket\Protocol\Protocol   $protocol
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface           $eventDispatcher
-     */
-    function __construct(Address $address, Type $socketType, Protocol $protocol, EventDispatcherInterface $eventDispatcher)
+    function __construct(Address $addressType, Type $socketType, Transport $transport, EventDispatcherInterface $eventDispatcher)
     {
-        $this->domainProtocol  = $address;
-        $this->type            = $socketType;
-        $this->protocol        = $protocol;
+        $this->addressType     = $addressType;
+        $this->socketType      = $socketType;
+        $this->transport       = $transport;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -40,7 +53,7 @@ class Socket
      */
     function open()
     {
-        $this->socketResource = socket_create($this->domainProtocol->getType(), $this->type->getType(), $this->protocol->getType());
+        $this->socketResource = socket_create($this->addressType->getType(), $this->socketType->getType(), $this->transport->getType());
 
         if (false === $this->socketResource) {
             throw new OpenException($this);
@@ -91,9 +104,10 @@ class Socket
     function close()
     {
         if (is_resource($this->socketResource)) {
+            socket_shutdown($this->socketResource, 2);
             socket_close($this->getSocketResource());
             $this->socketResource = null;
-            $this->getEventDispatcher()->dispatch(SocketEvent::CLOSE, new SocketEvent($this));
+            $this->getEventDispatcher()->dispatch(CloseEvent::getEventName(), new CloseEvent($this));
         }
     }
 
@@ -115,24 +129,24 @@ class Socket
     /**
      * @return EventDispatcherInterface
      */
-    public function getEventDispatcher()
+    function getEventDispatcher()
     {
         return $this->eventDispatcher;
     }
 
-    function getDomainProtocol()
+    function getAddressType()
     {
-        return $this->domainProtocol;
+        return $this->addressType;
     }
 
-    function getProtocol()
+    function getTransport()
     {
-        return $this->protocol;
+        return $this->transport;
     }
 
-    function getType()
+    function getSocketType()
     {
-        return $this->type;
+        return $this->socketType;
     }
 
 

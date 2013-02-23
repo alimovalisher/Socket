@@ -1,29 +1,42 @@
 <?php
-namespace Aysheka\Socket;
+namespace Aysheka\Socket\Server;
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Aysheka\Socket\Exception\SocketException;
-use Aysheka\Socket\Exception\Server\BindException;
-use Aysheka\Socket\Exception\Server\ListenException;
-use Aysheka\Socket\Event\ServerEvent;
-use Aysheka\Socket\Event\SocketEvent;
+use Aysheka\Socket\Address\Address;
+use Aysheka\Socket\Server\Event\BindEvent;
+use Aysheka\Socket\Server\Event\NewRequestEvent;
+use Aysheka\Socket\Server\Exception\BindException;
+use Aysheka\Socket\Server\Exception\ListenException;
+use Aysheka\Socket\Socket;
+use Aysheka\Socket\Transport\Transport;
+use Aysheka\Socket\Type\Type;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Server extends Socket
 {
+    /**
+     * @var int
+     */
     private $port;
+    /**
+     * @var string
+     */
     private $ip;
+    /**
+     * @var boolean
+     */
     private $running;
 
-    function __construct($ip, $port, DomainProtocol $domainProtocol, Type $socketType, SocketProtocol $socketProtocol, EventDispatcher $eventDispatcher)
+
+    function __construct($ip, $port, Address $addressType, Type $socketType, Transport $transport, EventDispatcherInterface $eventDispatcher)
     {
-        parent::__construct($domainProtocol, $socketType, $socketProtocol, $eventDispatcher);
+        parent::__construct($addressType, $socketType, $transport, $eventDispatcher);
 
         $this->ip   = $ip;
         $this->port = $port;
     }
 
     /**
-     * Stop server (this method only change server "running" status"
+     * Stop server (this method only change server "running" status")
      */
     function stop()
     {
@@ -31,7 +44,7 @@ class Server extends Socket
     }
 
     /**
-     * Start server (this method only change server "running" status"
+     * Start server (this method only change server "running" status")
      */
     function start()
     {
@@ -42,39 +55,50 @@ class Server extends Socket
      * Create server
      *  - bind to port
      *  - listen port
-     * @throws Exception\Server\ListenException
-     * @throws Exception\Server\BindException
+     * @throws ListenException
+     * @throws BindException
      */
-    function create()
+    function create($blocking = true)
     {
         $this->open();
         $serverSocket = $this->getSocketResource();
 
-        if (!socket_bind($serverSocket, $this->ip, $this->port)) {
+        if (!socket_bind($serverSocket, $this->getIp(), $this->getPort())) {
             throw new BindException($this);
         }
 
-
-        $this->getEventDispatcher()->dispatch(SocketEvent::BIND, new SocketEvent($this));
-
+        $this->getEventDispatcher()->dispatch(BindEvent::getEventName(), new BindEvent($this, $this));
 
         if (!socket_listen($serverSocket)) {
             throw new ListenException($this);
         }
 
-//        socket_set_nonblock($serverSocket);
+        if ($blocking) {
+            socket_set_block($serverSocket);
+        } else {
+            socket_set_nonblock($serverSocket);
+        }
 
         $this->start();
 
         while ($this->running) {
             if (false !== ($clientSocket = socket_accept($serverSocket))) {
-                $socket = new Socket($this->getDomainProtocol(), $this->getType(), $this->getProtocol(), $this->getEventDispatcher());
+                $socket = new Socket($this->getAddressType(), $this->getSocketType(), $this->getTransport(), $this->getEventDispatcher());
                 $socket->setSocketResource($clientSocket);
-                $socket->getEventDispatcher()->dispatch(ServerEvent::NEW_REQUEST, new ServerEvent($socket, $this));
+                $socket->getEventDispatcher()->dispatch(NewRequestEvent::getEventName(), new NewRequestEvent($socket, $this));
             }
 
-            sleep(3);
         }
+    }
+
+    protected function getIp()
+    {
+        return $this->ip;
+    }
+
+    protected function getPort()
+    {
+        return $this->port;
     }
 
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Aysheka\Socket\Exception\Server;
+namespace Aysheka\Socket\Server\Exception;
 
 use Aysheka\Socket\Server;
 

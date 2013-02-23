@@ -1,6 +1,6 @@
 <?php
 
-namespace Aysheka\Socket\Event\Init;
+namespace Aysheka\Socket\Client\Event;
 
 use Aysheka\Socket\Event\SocketEvent;
 

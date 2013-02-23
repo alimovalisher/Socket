@@ -1,9 +1,8 @@
 <?php
 namespace Aysheka\Socket\Exception\Init;
 use Aysheka\Socket\Socket;
-use Aysheka\Socket\Exception\SocketException;
 
-class ConnectException extends InitException
+class ConnectionException extends InitException
 {
     function __construct(Socket $socket)
     {

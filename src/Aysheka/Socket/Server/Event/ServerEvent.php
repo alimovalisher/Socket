@@ -1,15 +1,14 @@
 <?php
-namespace Aysheka\Socket\Event;
+namespace Aysheka\Socket\Server\Event;
+use Aysheka\Socket\Event\SocketEvent;
 use Aysheka\Socket\Server;
 use Aysheka\Socket\Socket;
 
-class ServerEvent extends SocketEvent
+abstract class ServerEvent extends SocketEvent
 {
-    const NEW_REQUEST = 'aysheka.socket.event.server.new_request';
-
     protected $server;
 
-    function __construct(Socket $socket, Server $server)
+    function __construct(Socket $socket, Server\Server $server)
     {
         parent::__construct($socket);
         $this->server = $server;
@@ -19,4 +18,6 @@ class ServerEvent extends SocketEvent
     {
         return $this->server;
     }
+
+
 }
