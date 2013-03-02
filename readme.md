@@ -7,7 +7,8 @@ This is the Simple lib for creating sockets Client|Server on php
 2. You can find samples(server, client) in test dir
 
 
-How connect to server:
+How connect to server
+=====================
 
 ~~~~~ php
 <?php
@@ -24,7 +25,8 @@ $client->close();`
 
 And thats all 
 
-How create a server:
+How create a server
+======================
 
 ~~~~~ php
 use Aysheka\Socket\Client;
