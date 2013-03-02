@@ -8,5 +8,4 @@ class ExceptionEvent extends SocketEvent
     {
         return 'aysheka.socket.event.exception';
     }
-
 }

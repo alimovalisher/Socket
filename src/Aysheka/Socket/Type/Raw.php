@@ -8,5 +8,4 @@ class Raw implements Type
     {
         return SOCK_RAW;
     }
-
 }

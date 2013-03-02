@@ -8,5 +8,4 @@ class SeqPacket implements Type
     {
         return SOCK_SEQPACKET;
     }
-
 }

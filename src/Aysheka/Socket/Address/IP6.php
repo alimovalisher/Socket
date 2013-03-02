@@ -8,5 +8,4 @@ class IP6 implements Address
     {
         return AF_INET6;
     }
-
 }

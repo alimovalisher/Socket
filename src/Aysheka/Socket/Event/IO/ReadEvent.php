@@ -10,5 +10,4 @@ class ReadEvent extends SocketEvent
     {
         return 'aysheka.socket.event.io.read';
     }
-
 }

@@ -10,6 +10,10 @@ use Aysheka\Socket\Transport\Transport;
 use Aysheka\Socket\Type\Type;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Client Socket, provide method for working with client socket
+ * @package Aysheka\Socket\Client
+ */
 class Client extends Socket
 {
     /**

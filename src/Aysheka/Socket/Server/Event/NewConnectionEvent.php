@@ -8,5 +8,4 @@ class NewConnectionEvent extends ServerEvent
     {
         return 'aysheka.socket.event.server.new_connection';
     }
-
 }

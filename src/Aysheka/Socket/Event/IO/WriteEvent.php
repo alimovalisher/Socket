@@ -10,5 +10,4 @@ class WriteEvent extends SocketEvent
     {
         return 'aysheka.socket.event.io.write';
     }
-
 }

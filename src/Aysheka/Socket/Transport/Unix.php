@@ -8,5 +8,4 @@ class Unix implements Transport
     {
         return SOL_UDP;
     }
-
 }

@@ -149,5 +149,4 @@ class Socket
         return $this->socketType;
     }
 
-
 }

@@ -10,5 +10,4 @@ class OpenEvent extends SocketEvent
     {
         return 'aysheka.socket.event.init.open';
     }
-
 }

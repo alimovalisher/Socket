@@ -10,5 +10,4 @@ class CloseEvent extends SocketEvent
     {
         return 'aysheka.socket.event.init.close';
     }
-
 }

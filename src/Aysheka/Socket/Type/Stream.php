@@ -8,5 +8,4 @@ class Stream implements Type
     {
         return SOCK_STREAM;
     }
-
 }

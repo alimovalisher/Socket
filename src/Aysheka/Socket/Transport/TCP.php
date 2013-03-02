@@ -8,5 +8,4 @@ class TCP implements Transport
     {
         return SOL_TCP;
     }
-
 }

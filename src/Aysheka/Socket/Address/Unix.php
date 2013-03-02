@@ -8,5 +8,4 @@ class Unix implements Address
     {
         return AF_UNIX;
     }
-
 }

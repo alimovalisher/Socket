@@ -10,5 +10,4 @@ class ConnectEvent extends SocketEvent
     {
         return 'aysheka.socket.event.init.connect';
     }
-
 }

@@ -8,5 +8,4 @@ class Dgram implements Type
     {
         return SOCK_DGRAM;
     }
-
 }

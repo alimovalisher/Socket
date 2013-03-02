@@ -8,5 +8,4 @@ class Rdm implements Type
     {
         return SOCK_RDM;
     }
-
 }
