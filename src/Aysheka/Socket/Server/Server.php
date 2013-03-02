@@ -3,7 +3,7 @@ namespace Aysheka\Socket\Server;
 
 use Aysheka\Socket\Address\Address;
 use Aysheka\Socket\Server\Event\BindEvent;
-use Aysheka\Socket\Server\Event\NewRequestEvent;
+use Aysheka\Socket\Server\Event\NewConnectionEvent;
 use Aysheka\Socket\Server\Exception\BindException;
 use Aysheka\Socket\Server\Exception\ListenException;
 use Aysheka\Socket\Socket;
@@ -25,7 +25,6 @@ class Server extends Socket
      * @var boolean
      */
     private $running;
-
 
     function __construct($ip, $port, Address $addressType, Type $socketType, Transport $transport, EventDispatcherInterface $eventDispatcher)
     {
@@ -82,12 +81,16 @@ class Server extends Socket
         $this->start();
 
         while ($this->running) {
-            if (false !== ($clientSocket = socket_accept($serverSocket))) {
-                $socket = new Socket($this->getAddressType(), $this->getSocketType(), $this->getTransport(), $this->getEventDispatcher());
-                $socket->setSocketResource($clientSocket);
-                $socket->getEventDispatcher()->dispatch(NewRequestEvent::getEventName(), new NewRequestEvent($socket, $this));
+
+            $clientSocket = socket_accept($serverSocket);
+
+            if (false == $clientSocket) {
+                continue;
             }
 
+            $socket = new Socket($this->getAddressType(), $this->getSocketType(), $this->getTransport(), $this->getEventDispatcher());
+            $socket->setSocketResource($clientSocket);
+            $socket->getEventDispatcher()->dispatch(NewConnectionEvent::getEventName(), new NewConnectionEvent($socket, $this));
         }
     }
 

@@ -5,7 +5,7 @@ use Aysheka\Socket\Client;
 use Aysheka\Socket\Type;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Aysheka\Socket\Event\SocketEvent;
-use Aysheka\Socket\Server\Event\NewRequestEvent;
+use Aysheka\Socket\Server\Event\NewConnectionEvent;
 use Aysheka\Socket\Event\Init\OpenEvent;
 use Aysheka\Socket\Event\Init\CloseEvent;
 use Aysheka\Socket\Client\Event\ConnectEvent;
@@ -15,30 +15,17 @@ use Aysheka\Socket\Event\IO\WriteEvent;
 
 $eventDispatcher = new EventDispatcher();
 
-$eventDispatcher->addListener(NewRequestEvent::getEventName(), function (NewRequestEvent $event) {
+$eventDispatcher->addListener(NewConnectionEvent::getEventName(), function (NewConnectionEvent $event) {
 
     $socket = $event->getSocket();
 
     $socket->write("HELLO I'm test server\n");
 
-    while (true) {
-        $data  = '';
-        $bytes = $socket->read();
-
-        while ($bytes) {
-            $data .= $bytes;
-
-            $bytes = $socket->read();
-        }
-
-        echo 'Receive from client: ', $data, "\n\n";
-
-        $socket->write('Server reply: ' . microtime(true));
+    while ($read = $socket->read()) {
+        echo "Read data: [{$read}]";
+        $socket->write('Response');
+        usleep(50);
     }
-
-
-    $socket->write("Closing your socket\n");
-
 });
 
 $eventDispatcher->addListener(OpenEvent::getEventName(), function (OpenEvent $event) {
@@ -66,4 +53,5 @@ $eventDispatcher->addListener(WriteEvent::getEventName(), function (WriteEvent $
 });
 
 $server = new \Aysheka\Socket\Server\Server('127.0.0.1', 8089, new \Aysheka\Socket\Address\IP4(), new Type\Stream(), new \Aysheka\Socket\Transport\TCP(), $eventDispatcher);
-$server->create();
+
+$server->create(true);
