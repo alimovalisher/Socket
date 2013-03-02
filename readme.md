@@ -56,5 +56,5 @@ $eventDispatcher->addListener(NewConnectionEvent::getEventName(), function (NewC
 
 $server = new Server('127.0.0.1', 8089, new IP4(), new Stream(), new TCP(), $eventDispatcher);
 
-$server->create(true);
+$server->create();
 ~~~~~
