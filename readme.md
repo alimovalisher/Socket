@@ -30,15 +30,9 @@ How create a server
 
 ~~~~~ php
 use Aysheka\Socket\Client;
-use Aysheka\Socket\Type;
+use Aysheka\Socket\Type\Stream;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Aysheka\Socket\Server\Event\NewConnectionEvent;
-use Aysheka\Socket\Event\Init\OpenEvent;
-use Aysheka\Socket\Event\Init\CloseEvent;
-use Aysheka\Socket\Client\Event\ConnectEvent;
-use Aysheka\Socket\Server\Event\BindEvent;
-use Aysheka\Socket\Event\IO\ReadEvent;
-use Aysheka\Socket\Event\IO\WriteEvent;
 use Aysheka\Socket\Server\Server;
 use Aysheka\Socket\Address\IP4;
 use Aysheka\Socket\Transport\TCP;
@@ -60,7 +54,7 @@ $eventDispatcher->addListener(NewConnectionEvent::getEventName(), function (NewC
 });
 
 
-$server = new Server('127.0.0.1', 8089, new IP4(), new Type\Stream(), new TCP(), $eventDispatcher);
+$server = new Server('127.0.0.1', 8089, new IP4(), new Stream(), new TCP(), $eventDispatcher);
 
 $server->create(true);
 ~~~~~
