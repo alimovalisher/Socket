@@ -28,6 +28,6 @@ abstract class SocketEvent extends Event
     }
 
     static function getEventName(){
-        return self::$name;
+        return static::$name;
     }
 }
