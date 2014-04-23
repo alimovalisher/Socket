@@ -9,6 +9,7 @@ abstract class SocketEvent extends Event
 {
     protected $socket;
     protected $data;
+    protected static $name;
 
     function __construct(Socket $socket, $data = null)
     {
@@ -26,5 +27,7 @@ abstract class SocketEvent extends Event
         return $this->data;
     }
 
-    abstract static function getEventName();
+    static function getEventName(){
+        return self::$name;
+    }
 }

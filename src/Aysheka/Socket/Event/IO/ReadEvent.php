@@ -6,8 +6,5 @@ use Aysheka\Socket\Event\SocketEvent;
 
 class ReadEvent extends SocketEvent
 {
-    static function getEventName()
-    {
-        return 'aysheka.socket.event.io.read';
-    }
+    protected static $name = 'aysheka.socket.event.io.read';
 }

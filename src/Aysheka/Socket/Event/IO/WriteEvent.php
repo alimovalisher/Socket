@@ -6,8 +6,5 @@ use Aysheka\Socket\Event\SocketEvent;
 
 class WriteEvent extends SocketEvent
 {
-    static function getEventName()
-    {
-        return 'aysheka.socket.event.io.write';
-    }
+    protected static $name = 'aysheka.socket.event.io.write';
 }

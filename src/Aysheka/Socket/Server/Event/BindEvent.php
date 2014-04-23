@@ -4,8 +4,5 @@ namespace Aysheka\Socket\Server\Event;
 
 class BindEvent extends ServerEvent
 {
-    static function getEventName()
-    {
-        return 'aysheka.socket.server.event.bind';
-    }
+    protected static $name = 'aysheka.socket.server.event.bind';
 }
