@@ -6,8 +6,5 @@ use Aysheka\Socket\Event\SocketEvent;
 
 class OpenEvent extends SocketEvent
 {
-    static function getEventName()
-    {
-        return 'aysheka.socket.event.init.open';
-    }
+    protected static $name = 'aysheka.socket.event.init.open';
 }
