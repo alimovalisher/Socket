@@ -8,6 +8,7 @@ use Aysheka\Socket\Event\Init\CloseEvent;
 use Aysheka\Socket\Event\Init\OpenEvent;
 use Aysheka\Socket\Exception\IO\ReadException;
 use Aysheka\Socket\Exception\Init\OpenException;
+use Aysheka\Socket\Exception\IO\WriteException;
 use Aysheka\Socket\Transport\Transport;
 use Aysheka\Socket\Type\Type;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -92,7 +93,7 @@ class Socket
     function write($data)
     {
         if (!socket_write($this->socketResource, $data, strlen($data))) {
-            throw new ReadException($this, $data);
+            throw new WriteException($this, $data);
         }
 
         $this->getEventDispatcher()->dispatch(WriteEvent::getEventName(), new WriteEvent($this, $data));
